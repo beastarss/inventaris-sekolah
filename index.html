@@ -4,111 +4,244 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Sistem Inventaris Sekolah — Demo</title>
+
+    <!-- SB Admin 2 CSS -->
     <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      href="https://cdn.jsdelivr.net/npm/startbootstrap-sb-admin-2@4.1.4/css/sb-admin-2.min.css"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      rel="stylesheet"
+    />
+    <!-- DataTables -->
+    <link
+      href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap4.min.css"
       rel="stylesheet"
     />
     <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+      href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap4.min.css"
       rel="stylesheet"
     />
+    <!-- SweetAlert2 -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+      rel="stylesheet"
+    />
+
     <style>
       body {
-        background: #f4f6f9;
+        font-family:
+          "Nunito",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          "Helvetica Neue",
+          Arial,
+          sans-serif;
       }
-      .sidebar {
-        min-height: 100vh;
-        background: #343a40;
-        color: #fff;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 230px;
-        padding-top: 1rem;
-        overflow-y: auto;
-        z-index: 1030;
-      }
-      .sidebar a {
-        color: #c2c7d0;
-        text-decoration: none;
-        display: block;
-        padding: 0.6rem 1rem;
-        border-radius: 0.25rem;
-        margin: 0 0.5rem 0.15rem;
+      .sidebar .nav-item .nav-link {
         cursor: pointer;
       }
-      .sidebar a:hover,
-      .sidebar a.active {
-        background: #007bff;
-        color: #fff;
+      .sidebar .nav-item .nav-link.active {
+        font-weight: 700;
       }
-      .content {
-        margin-left: 230px;
-        padding: 1.5rem;
+      #wrapper {
+        min-height: 100vh;
       }
-      .brand {
-        padding: 0 1rem 1rem;
-        border-bottom: 1px solid #4b545c;
+      .sidebar .nav-item .nav-link i {
+        width: 1.1rem;
+        text-align: center;
+      }
+      table.dataTable tbody td {
+        vertical-align: middle;
       }
       .badge-status {
         font-size: 0.75rem;
       }
-      @media (max-width: 768px) {
-        .sidebar {
-          position: relative;
-          width: 100%;
-          min-height: auto;
-        }
-        .content {
-          margin-left: 0;
-        }
+      .login-bg {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        min-height: 100vh;
+      }
+      .login-card {
+        max-width: 440px;
+        width: 100%;
+      }
+      /* Pastikan login page full-screen overlay */
+      #loginPage {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 9999;
+        overflow-y: auto;
+      }
+      #loginPage.d-none {
+        display: none !important;
       }
     </style>
   </head>
   <body>
-    <!-- ================= SIDEBAR ================= -->
-    <div class="sidebar" id="sidebar">
-      <div class="brand">
-        <h5 class="mb-0"><i class="bi bi-box-seam"></i> Inventaris</h5>
-        <small class="text-muted">Sistem Sekolah</small>
-      </div>
-      <nav class="mt-3" id="navMenu"></nav>
-      <div class="px-3 mt-4 pb-3">
-        <button class="btn btn-sm btn-outline-light w-100" id="btnLogout">
-          <i class="bi bi-box-arrow-right"></i> Logout
-        </button>
+    <!-- ================= LOGIN PAGE ================= -->
+    <div
+      id="loginPage"
+      class="login-bg d-flex align-items-center justify-content-center"
+    >
+      <div class="login-card">
+        <div class="card shadow-lg">
+          <div class="card-body p-5">
+            <div class="text-center">
+              <h1 class="h4 text-gray-900 mb-4">
+                <i class="fas fa-boxes text-primary"></i> Inventaris Sekolah
+              </h1>
+            </div>
+            <div class="form-group">
+              <label class="small font-weight-bold"
+                >Email <span class="text-danger">*</span></label
+              >
+              <input
+                id="loginEmail"
+                type="email"
+                class="form-control"
+                placeholder="email@sekolah.test"
+                autofocus
+              />
+            </div>
+            <div class="form-group">
+              <label class="small font-weight-bold"
+                >Password <span class="text-danger">*</span></label
+              >
+              <input
+                id="loginPassword"
+                type="password"
+                class="form-control"
+                placeholder="password"
+              />
+            </div>
+            <button
+              class="btn btn-primary btn-block"
+              id="btnLogin"
+              type="button"
+            >
+              <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+            <hr />
+            <div class="small text-muted">
+              <strong>Admin:</strong> admin@sekolah.test / password<br />
+              <strong>User:</strong> maya@sekolah.test / password
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- ================= CONTENT ================= -->
-    <div class="content">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4 id="pageTitle" class="mb-0">Dashboard</h4>
-        <div>
-          <span class="me-2"
-            ><i class="bi bi-person-circle"></i>
-            <span id="currentUser"></span>
-          </span>
+    <!-- ================= APP ================= -->
+    <div id="wrapper" class="d-none">
+      <!-- Sidebar -->
+      <ul
+        class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion"
+        id="accordionSidebar"
+      >
+        <a
+          class="sidebar-brand d-flex align-items-center justify-content-center"
+          href="#"
+        >
+          <div class="sidebar-brand-icon rotate-n-15">
+            <i class="fas fa-boxes"></i>
+          </div>
+          <div class="sidebar-brand-text mx-3">Inventaris</div>
+        </a>
+        <hr class="sidebar-divider my-0" />
+        <div id="navMenu"></div>
+        <hr class="sidebar-divider d-none d-md-block" />
+        <div class="text-center d-none d-md-inline">
+          <button class="rounded-circle border-0" id="sidebarToggle"></button>
         </div>
+      </ul>
+
+      <!-- Content Wrapper -->
+      <div id="content-wrapper" class="d-flex flex-column">
+        <div id="content">
+          <!-- Topbar -->
+          <nav
+            class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow"
+          >
+            <button
+              id="sidebarToggleTop"
+              class="btn btn-link d-md-none rounded-circle mr-3"
+            >
+              <i class="fa fa-bars"></i>
+            </button>
+            <h4 id="pageTitle" class="m-0 text-gray-800">Dashboard</h4>
+            <ul class="navbar-nav ml-auto">
+              <li class="nav-item dropdown no-arrow">
+                <a
+                  class="nav-link dropdown-toggle"
+                  href="#"
+                  id="userDropdown"
+                  role="button"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  <span
+                    class="mr-2 d-none d-lg-inline text-gray-600 small"
+                    id="currentUser"
+                  ></span>
+                  <i class="fas fa-user-circle fa-2x text-gray-400"></i>
+                </a>
+                <div
+                  class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                  aria-labelledby="userDropdown"
+                >
+                  <a class="dropdown-item" href="#" id="btnLogout">
+                    <i
+                      class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"
+                    ></i>
+                    Logout
+                  </a>
+                </div>
+              </li>
+            </ul>
+          </nav>
+
+          <!-- Page Content -->
+          <div class="container-fluid">
+            <div id="pageContent"></div>
+          </div>
+        </div>
+
+        <footer class="sticky-footer bg-white">
+          <div class="container my-auto">
+            <div class="copyright text-center my-auto">
+              <span>&copy; 2026 Sistem Inventaris Sekolah — Demo</span>
+            </div>
+          </div>
+        </footer>
       </div>
-      <div id="pageContent"></div>
     </div>
 
     <!-- ================= MODAL ================= -->
-    <div class="modal fade" id="appModal" tabindex="-1">
-      <div class="modal-dialog">
+    <div class="modal fade" id="appModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="modalTitle">Form</h5>
             <button
               type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-            ></button>
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
           </div>
           <div class="modal-body" id="modalBody"></div>
           <div class="modal-footer">
-            <button class="btn btn-secondary" data-bs-dismiss="modal">
+            <button class="btn btn-secondary" data-dismiss="modal">
               Batal
             </button>
             <button class="btn btn-primary" id="modalSave">Simpan</button>
@@ -117,8 +250,62 @@
       </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- ================= SCRIPTS ================= -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/startbootstrap-sb-admin-2@4.1.4/js/sb-admin-2.min.js"></script>
+
+    <!-- DataTables -->
+    <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap4.min.js"></script>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
     <script>
+      /* ============================================================
+   SWEETALERT HELPERS
+   ============================================================ */
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 2500,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.addEventListener("mouseenter", Swal.stopTimer);
+          toast.addEventListener("mouseleave", Swal.resumeTimer);
+        },
+      });
+
+      function swalSuccess(msg) {
+        Toast.fire({ icon: "success", title: msg });
+      }
+      function swalError(msg) {
+        Toast.fire({ icon: "error", title: msg });
+      }
+      function swalInfo(msg) {
+        Toast.fire({ icon: "info", title: msg });
+      }
+      function swalWarning(msg) {
+        Toast.fire({ icon: "warning", title: msg });
+      }
+      function swalConfirm(title, text, confirmText) {
+        return Swal.fire({
+          title: title,
+          text: text,
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#e74a3b",
+          cancelButtonColor: "#858796",
+          confirmButtonText: confirmText || "Ya, Hapus!",
+          cancelButtonText: "Batal",
+        });
+      }
+
       /* ============================================================
    LOCALSTORAGE DATABASE
    ============================================================ */
@@ -136,7 +323,7 @@
       };
 
       /* ============================================================
-   SEEDER — dijalankan sekali
+   SEEDER
    ============================================================ */
       function seed() {
         if (localStorage.getItem("inv_seeded")) return;
@@ -371,29 +558,61 @@
       /* ============================================================
    AUTH
    ============================================================ */
-      let currentUser = JSON.parse(
-        localStorage.getItem("inv_currentUser") || "null",
-      );
+      let currentUser = null;
+      try {
+        currentUser = JSON.parse(
+          localStorage.getItem("inv_currentUser") || "null",
+        );
+      } catch (e) {
+        currentUser = null;
+      }
 
-      function login(email, password) {
+      function doLoginAction() {
+        const email = document.getElementById("loginEmail").value.trim();
+        const password = document.getElementById("loginPassword").value;
+
+        if (!email || !password) {
+          swalError("Email dan password wajib diisi!");
+          return;
+        }
+
         const u = DB.get("users").find(
           (x) => x.email === email && x.password === password,
         );
+
         if (!u) {
-          alert("Email atau password salah!");
+          swalError("Email atau password salah!");
           return;
         }
+
         currentUser = u;
         localStorage.setItem("inv_currentUser", JSON.stringify(u));
         currentPage = "dashboard";
         logActivity("login", `${u.name} login ke sistem`);
+
+        swalSuccess("Selamat datang, " + u.name + "!");
         renderApp();
       }
 
       function logout() {
-        localStorage.removeItem("inv_currentUser");
-        currentUser = null;
-        renderLogin();
+        Swal.fire({
+          title: "Logout?",
+          text: "Anda akan keluar dari sistem",
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonColor: "#4e73df",
+          cancelButtonColor: "#858796",
+          confirmButtonText: "Ya, Logout",
+          cancelButtonText: "Batal",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            logActivity("logout", currentUser.name + " logout dari sistem");
+            localStorage.removeItem("inv_currentUser");
+            currentUser = null;
+            renderLogin();
+            swalInfo("Anda telah logout");
+          }
+        });
       }
 
       /* ============================================================
@@ -474,7 +693,7 @@
           "rusak berat": "danger",
         };
         return (
-          '<span class="badge bg-' +
+          '<span class="badge badge-' +
           (map[s] || "secondary") +
           ' badge-status">' +
           s +
@@ -496,10 +715,47 @@
       }
 
       /* ============================================================
+   DATATABLE HELPER
+   ============================================================ */
+      let currentDataTable = null;
+      function initDataTable(selector) {
+        if (currentDataTable) {
+          try {
+            currentDataTable.destroy();
+          } catch (e) {}
+          currentDataTable = null;
+        }
+        currentDataTable = $(selector).DataTable({
+          responsive: true,
+          pageLength: 10,
+          lengthMenu: [
+            [5, 10, 25, 50, -1],
+            [5, 10, 25, 50, "Semua"],
+          ],
+          language: {
+            search: "Cari:",
+            lengthMenu: "Tampilkan _MENU_ data",
+            info: "Menampilkan _START_ - _END_ dari _TOTAL_ data",
+            infoEmpty: "Tidak ada data",
+            infoFiltered: "(difilter dari _MAX_ total data)",
+            zeroRecords: "Data tidak ditemukan",
+            emptyTable: "Tidak ada data",
+            paginate: {
+              first: "Awal",
+              last: "Akhir",
+              next: "Berikutnya",
+              previous: "Sebelumnya",
+            },
+          },
+          columnDefs: [{ targets: "no-sort", orderable: false }],
+        });
+        return currentDataTable;
+      }
+
+      /* ============================================================
    ROUTING
    ============================================================ */
       let currentPage = "dashboard";
-
       function navigate(page) {
         currentPage = page;
         renderMenu();
@@ -510,50 +766,10 @@
    RENDER LOGIN
    ============================================================ */
       function renderLogin() {
-        document.getElementById("sidebar").style.display = "none";
-        document.querySelector(".content").style.marginLeft = "0";
-        document.getElementById("pageTitle").innerText = "Login";
-        document.getElementById("currentUser").innerText = "";
-        document.getElementById("pageContent").innerHTML = `
-    <div class="row justify-content-center">
-      <div class="col-md-5">
-        <div class="card shadow-sm">
-          <div class="card-body">
-            <h4 class="card-title text-center mb-3">
-              <i class="bi bi-box-seam"></i> Inventaris Sekolah
-            </h4>
-            <div class="mb-3">
-              <label class="form-label">Email <span class="text-danger">*</span></label>
-              <input id="loginEmail" type="email" class="form-control"
-                placeholder="email@sekolah.test" autofocus>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Password <span class="text-danger">*</span></label>
-              <input id="loginPassword" type="password" class="form-control" placeholder="password">
-            </div>
-            <button class="btn btn-primary w-100" id="btnLogin">Login</button>
-            <hr>
-            <small class="text-muted d-block">
-              <strong>Admin:</strong> admin@sekolah.test / password<br>
-              <strong>User:</strong> maya@sekolah.test / password
-            </small>
-          </div>
-        </div>
-      </div>
-    </div>`;
-
-        document.getElementById("btnLogin").addEventListener("click", doLogin);
-        document
-          .getElementById("loginPassword")
-          .addEventListener("keypress", (e) => {
-            if (e.key === "Enter") doLogin();
-          });
-      }
-      function doLogin() {
-        login(
-          document.getElementById("loginEmail").value.trim(),
-          document.getElementById("loginPassword").value,
-        );
+        document.getElementById("loginPage").classList.remove("d-none");
+        document.getElementById("wrapper").classList.add("d-none");
+        document.getElementById("loginEmail").value = "";
+        document.getElementById("loginPassword").value = "";
       }
 
       /* ============================================================
@@ -564,8 +780,12 @@
           renderLogin();
           return;
         }
-        document.getElementById("sidebar").style.display = "block";
-        document.querySelector(".content").style.marginLeft = "230px";
+        // Sembunyikan login page, tampilkan app
+        document.getElementById("loginPage").classList.add("d-none");
+        document.getElementById("loginPage").style.display = "none";
+        document.getElementById("wrapper").classList.remove("d-none");
+        document.getElementById("wrapper").style.display = "flex";
+
         document.getElementById("currentUser").innerText =
           currentUser.name + " (" + currentUser.role + ")";
         renderMenu();
@@ -577,13 +797,13 @@
           {
             id: "dashboard",
             label: "Dashboard",
-            icon: "speedometer2",
+            icon: "tachometer-alt",
             roles: ["admin", "user"],
           },
           {
             id: "items",
             label: "Barang",
-            icon: "box-seam",
+            icon: "box",
             roles: ["admin", "user"],
           },
           {
@@ -595,25 +815,25 @@
           {
             id: "loans",
             label: "Peminjaman",
-            icon: "arrow-left-right",
+            icon: "exchange-alt",
             roles: ["admin", "user"],
           },
           {
             id: "returns",
             label: "Pengembalian",
-            icon: "arrow-return-left",
+            icon: "undo-alt",
             roles: ["admin"],
           },
           {
             id: "users",
             label: "Manajemen User",
-            icon: "people",
+            icon: "users",
             roles: ["admin"],
           },
           {
             id: "logs",
             label: "Activity Log",
-            icon: "journal-text",
+            icon: "clipboard-list",
             roles: ["admin"],
           },
         ];
@@ -624,16 +844,23 @@
         menu
           .filter((m) => m.roles.includes(currentUser.role))
           .forEach((m) => {
+            const li = document.createElement("li");
+            li.className = "nav-item";
             const a = document.createElement("a");
+            a.className = "nav-link" + (currentPage === m.id ? " active" : "");
             a.href = "#";
-            a.dataset.page = m.id;
-            if (currentPage === m.id) a.classList.add("active");
-            a.innerHTML = '<i class="bi bi-' + m.icon + '"></i> ' + m.label;
-            a.addEventListener("click", function (e) {
+            a.innerHTML =
+              '<i class="fas fa-fw fa-' +
+              m.icon +
+              '"></i><span>' +
+              m.label +
+              "</span>";
+            a.addEventListener("click", (e) => {
               e.preventDefault();
               navigate(m.id);
             });
-            nav.appendChild(a);
+            li.appendChild(a);
+            nav.appendChild(li);
           });
       }
 
@@ -662,97 +889,145 @@
         const terlambat = loans.filter((l) => l.status === "terlambat").length;
 
         let html = `
-    <div class="row g-3 mb-4">
-      <div class="col-md-3"><div class="card border-start border-primary border-4">
-        <div class="card-body">
-          <div class="text-muted small">Total Barang</div>
-          <h3>${formatNumber(items.length)}</h3>
-        </div></div></div>
-      <div class="col-md-3"><div class="card border-start border-success border-4">
-        <div class="card-body">
-          <div class="text-muted small">Total Stok</div>
-          <h3>${formatNumber(totalStock)}</h3>
-        </div></div></div>
-      <div class="col-md-3"><div class="card border-start border-warning border-4">
-        <div class="card-body">
-          <div class="text-muted small">Sedang Dipinjam</div>
-          <h3>${formatNumber(dipinjam)}</h3>
-        </div></div></div>
-      <div class="col-md-3"><div class="card border-start border-danger border-4">
-        <div class="card-body">
-          <div class="text-muted small">Terlambat</div>
-          <h3>${formatNumber(terlambat)}</h3>
-        </div></div></div>
+    <div class="row">
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Barang</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">${formatNumber(items.length)}</div>
+              </div>
+              <div class="col-auto"><i class="fas fa-box fa-2x text-gray-300"></i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Stok</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">${formatNumber(totalStock)}</div>
+              </div>
+              <div class="col-auto"><i class="fas fa-cubes fa-2x text-gray-300"></i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Sedang Dipinjam</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">${formatNumber(dipinjam)}</div>
+              </div>
+              <div class="col-auto"><i class="fas fa-exchange-alt fa-2x text-gray-300"></i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-danger shadow h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Terlambat</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">${formatNumber(terlambat)}</div>
+              </div>
+              <div class="col-auto"><i class="fas fa-clock fa-2x text-gray-300"></i></div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>`;
 
         if (currentUser.role === "admin") {
           html += `
-      <div class="row g-3">
-        <div class="col-md-6">
-          <div class="card">
-            <div class="card-header">Barang Paling Sering Dipinjam</div>
-            <ul class="list-group list-group-flush">
-              ${
-                topItems()
-                  .map(
-                    (x) =>
-                      '<li class="list-group-item d-flex justify-content-between">' +
-                      "<span>" +
-                      escapeHtml(x.name) +
-                      "</span><strong>" +
-                      x.total +
-                      "x</strong></li>",
-                  )
-                  .join("") || '<li class="list-group-item">Belum ada data</li>'
-              }
-            </ul>
+      <div class="row">
+        <div class="col-lg-6 mb-4">
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary">Barang Paling Sering Dipinjam</h6>
+            </div>
+            <div class="card-body p-0">
+              <ul class="list-group list-group-flush">
+                ${
+                  topItems()
+                    .map(
+                      (x) =>
+                        '<li class="list-group-item d-flex justify-content-between align-items-center">' +
+                        "<span>" +
+                        escapeHtml(x.name) +
+                        "</span>" +
+                        '<span class="badge badge-primary badge-pill">' +
+                        x.total +
+                        "x</span></li>",
+                    )
+                    .join("") ||
+                  '<li class="list-group-item">Belum ada data</li>'
+                }
+              </ul>
+            </div>
           </div>
         </div>
-        <div class="col-md-6">
-          <div class="card">
-            <div class="card-header">User Paling Aktif</div>
-            <ul class="list-group list-group-flush">
-              ${
-                topUsers()
-                  .map(
-                    (x) =>
-                      '<li class="list-group-item d-flex justify-content-between">' +
-                      "<span>" +
-                      escapeHtml(x.name) +
-                      "</span><strong>" +
-                      x.total +
-                      "x</strong></li>",
-                  )
-                  .join("") || '<li class="list-group-item">Belum ada data</li>'
-              }
-            </ul>
+        <div class="col-lg-6 mb-4">
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary">User Paling Aktif</h6>
+            </div>
+            <div class="card-body p-0">
+              <ul class="list-group list-group-flush">
+                ${
+                  topUsers()
+                    .map(
+                      (x) =>
+                        '<li class="list-group-item d-flex justify-content-between align-items-center">' +
+                        "<span>" +
+                        escapeHtml(x.name) +
+                        "</span>" +
+                        '<span class="badge badge-success badge-pill">' +
+                        x.total +
+                        "x</span></li>",
+                    )
+                    .join("") ||
+                  '<li class="list-group-item">Belum ada data</li>'
+                }
+              </ul>
+            </div>
           </div>
         </div>
       </div>`;
         } else {
           html += `
-      <div class="card">
-        <div class="card-header">Riwayat Peminjaman Saya (5 terakhir)</div>
-        <ul class="list-group list-group-flush">
-          ${
-            DB.get("loans")
-              .filter((l) => l.user_id === currentUser.id)
-              .slice(-5)
-              .reverse()
-              .map(
-                (l) =>
-                  '<li class="list-group-item d-flex justify-content-between">' +
-                  "<span>" +
-                  escapeHtml(getItem(l.item_id).name) +
-                  " (" +
-                  l.quantity +
-                  ")</span>" +
-                  statusBadge(l.status) +
-                  "</li>",
-              )
-              .join("") || '<li class="list-group-item">Belum ada</li>'
-          }
-        </ul>
+      <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 font-weight-bold text-primary">Riwayat Peminjaman Saya (5 terakhir)</h6>
+        </div>
+        <div class="card-body p-0">
+          <ul class="list-group list-group-flush">
+            ${
+              DB.get("loans")
+                .filter((l) => l.user_id === currentUser.id)
+                .slice(-5)
+                .reverse()
+                .map(
+                  (l) =>
+                    '<li class="list-group-item d-flex justify-content-between align-items-center">' +
+                    "<span>" +
+                    escapeHtml(getItem(l.item_id).name) +
+                    " (" +
+                    l.quantity +
+                    ")</span>" +
+                    statusBadge(l.status) +
+                    "</li>",
+                )
+                .join("") || '<li class="list-group-item">Belum ada</li>'
+            }
+          </ul>
+        </div>
       </div>`;
         }
         document.getElementById("pageContent").innerHTML = html;
@@ -784,194 +1059,63 @@
       /* ============================================================
    BARANG (ITEMS)
    ============================================================ */
-      let itemSearch = "";
       function renderItems() {
         document.getElementById("pageTitle").innerText = "Data Barang";
         const isAdmin = currentUser.role === "admin";
-        const items = DB.get("items").filter(
-          (i) =>
-            i.name.toLowerCase().includes(itemSearch.toLowerCase()) ||
-            i.code.toLowerCase().includes(itemSearch.toLowerCase()),
-        );
-        const rows =
-          items
-            .map(
-              (i) => `
+        const items = DB.get("items");
+
+        const rows = items
+          .map(
+            (i) => `
     <tr>
       <td>${escapeHtml(i.code)}</td>
       <td>${escapeHtml(i.name)}</td>
       <td>${escapeHtml(getCategory(i.category_id).name)}</td>
-      <td class="text-end">${formatNumber(i.stock)}</td>
+      <td class="text-right">${formatNumber(i.stock)}</td>
       <td>${statusBadge(i.condition)}</td>
-      <td>
+      <td class="no-sort">
         ${
           isAdmin
-            ? '<button class="btn btn-sm btn-warning me-1" data-act="edit-item" data-id="' +
+            ? '<button class="btn btn-sm btn-warning mr-1" data-act="edit-item" data-id="' +
               i.id +
-              '">' +
-              '<i class="bi bi-pencil"></i></button>' +
+              '"><i class="fas fa-pencil-alt"></i></button>' +
               '<button class="btn btn-sm btn-danger" data-act="del-item" data-id="' +
               i.id +
-              '">' +
-              '<i class="bi bi-trash"></i></button>'
+              '"><i class="fas fa-trash"></i></button>'
             : ""
         }
         ${
           currentUser.role === "user"
             ? '<button class="btn btn-sm btn-primary" data-act="pinjam" data-id="' +
               i.id +
-              '">' +
-              '<i class="bi bi-arrow-left-right"></i> Pinjam</button>'
+              '"><i class="fas fa-exchange-alt"></i> Pinjam</button>'
             : ""
         }
       </td>
     </tr>`,
-            )
-            .join("") ||
-          '<tr><td colspan="6" class="text-center">Tidak ada data</td></tr>';
+          )
+          .join("");
 
         document.getElementById("pageContent").innerHTML = `
-    <div class="card">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <span>Daftar Barang Inventaris</span>
-        <div>
-          <input id="searchItem" class="form-control form-control-sm d-inline-block w-auto me-2"
-            placeholder="Cari..." value="${escapeHtml(itemSearch)}">
-          ${
-            isAdmin
-              ? '<button class="btn btn-sm btn-primary" data-act="add-item">' +
-                '<i class="bi bi-plus"></i> Tambah</button>'
-              : ""
-          }
+    <div class="card shadow mb-4">
+      <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">Daftar Barang Inventaris</h6>
+        ${isAdmin ? '<button class="btn btn-sm btn-primary" data-act="add-item"><i class="fas fa-plus"></i> Tambah</button>' : ""}
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered" id="tblItems" width="100%" cellspacing="0">
+            <thead>
+              <tr><th>Kode</th><th>Nama</th><th>Kategori</th><th class="text-right">Stok</th><th>Kondisi</th><th class="no-sort">Aksi</th></tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
         </div>
       </div>
-      <div class="table-responsive">
-        <table class="table table-striped table-hover mb-0">
-          <thead class="table-light">
-            <tr><th>Kode</th><th>Nama</th><th>Kategori</th><th class="text-end">Stok</th>
-            <th>Kondisi</th><th>Aksi</th></tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>
     </div>`;
 
-        const search = document.getElementById("searchItem");
-        if (search)
-          search.addEventListener("input", (e) => {
-            itemSearch = e.target.value;
-            renderItems();
-            const s = document.getElementById("searchItem");
-            if (s) {
-              s.focus();
-              s.setSelectionRange(s.value.length, s.value.length);
-            }
-          });
-
-        document.querySelectorAll("[data-act]").forEach((btn) => {
-          btn.addEventListener("click", function () {
-            const act = this.dataset.act;
-            const id = this.dataset.id ? +this.dataset.id : null;
-            if (act === "add-item") addItem();
-            if (act === "edit-item") editItem(id);
-            if (act === "del-item") deleteItem(id);
-            if (act === "pinjam") ajukanPinjam(id);
-          });
-        });
-      }
-
-      function addItem() {
-        openModal("Tambah Barang", itemForm());
-        document.getElementById("modalSave").onclick = () => saveItem();
-      }
-      function editItem(id) {
-        const i = DB.get("items").find((x) => x.id === id);
-        openModal("Edit Barang", itemForm(i));
-        document.getElementById("modalSave").onclick = () => saveItem(id);
-      }
-      function itemForm(i) {
-        i = i || {};
-        const cats = DB.get("categories");
-        return `
-    <div class="mb-3">
-      <label class="form-label">Kategori <span class="text-danger">*</span></label>
-      <select id="f_category" class="form-select">
-        ${cats
-          .map(
-            (c) =>
-              '<option value="' +
-              c.id +
-              '" ' +
-              (i.category_id === c.id ? "selected" : "") +
-              ">" +
-              escapeHtml(c.name) +
-              "</option>",
-          )
-          .join("")}
-      </select>
-    </div>
-    <div class="mb-3">
-      <label class="form-label">Nama Barang <span class="text-danger">*</span></label>
-      <input id="f_name" class="form-control" placeholder="cth: Mikroskop" value="${escapeHtml(i.name || "")}">
-    </div>
-    <div class="mb-3">
-      <label class="form-label">Kode/SKU <span class="text-danger">*</span></label>
-      <input id="f_code" class="form-control" placeholder="cth: LAB-001" value="${escapeHtml(i.code || "")}">
-    </div>
-    <div class="mb-3">
-      <label class="form-label">Stok <span class="text-danger">*</span></label>
-      <input id="f_stock" type="number" class="form-control" placeholder="0" value="${i.stock || 0}">
-    </div>
-    <div class="mb-3">
-      <label class="form-label">Kondisi <span class="text-danger">*</span></label>
-      <select id="f_condition" class="form-select">
-        ${["baik", "rusak ringan", "rusak berat"]
-          .map(
-            (c) =>
-              "<option " +
-              (i.condition === c ? "selected" : "") +
-              ">" +
-              c +
-              "</option>",
-          )
-          .join("")}
-      </select>
-    </div>`;
-      }
-      function saveItem(id) {
-        const data = {
-          category_id: +document.getElementById("f_category").value,
-          name: document.getElementById("f_name").value.trim(),
-          code: document.getElementById("f_code").value.trim(),
-          stock: +document.getElementById("f_stock").value,
-          condition: document.getElementById("f_condition").value,
-        };
-        if (!data.name || !data.code) {
-          alert("Nama dan Kode wajib diisi");
-          return;
-        }
-        const items = DB.get("items");
-        if (id) {
-          const idx = items.findIndex((x) => x.id === id);
-          items[idx] = Object.assign({}, items[idx], data);
-          logActivity("update_item", "Mengubah barang " + data.name);
-        } else {
-          data.id = DB.nextId("items");
-          items.push(data);
-          logActivity("create_item", "Menambahkan barang " + data.name);
-        }
-        DB.set("items", items);
-        closeModal();
-        renderItems();
-      }
-      function deleteItem(id) {
-        if (!confirm("Yakin hapus barang ini?")) return;
-        DB.set(
-          "items",
-          DB.get("items").filter((x) => x.id !== id),
-        );
-        logActivity("delete_item", "Menghapus barang #" + id);
-        renderItems();
+        initDataTable("#tblItems");
+        bindActions();
       }
 
       /* ============================================================
@@ -980,103 +1124,42 @@
       function renderCategories() {
         document.getElementById("pageTitle").innerText = "Kategori Barang";
         const cats = DB.get("categories");
-        const rows =
-          cats
-            .map((c) => {
-              const count = DB.get("items").filter(
-                (i) => i.category_id === c.id,
-              ).length;
-              return `<tr>
-      <td>${c.id}</td><td>${escapeHtml(c.name)}</td>
-      <td class="text-end">${formatNumber(count)}</td>
-      <td>
-        <button class="btn btn-sm btn-warning me-1" data-act="edit-cat" data-id="${c.id}">
-          <i class="bi bi-pencil"></i></button>
-        <button class="btn btn-sm btn-danger" data-act="del-cat" data-id="${c.id}">
-          <i class="bi bi-trash"></i></button>
+        const rows = cats
+          .map((c) => {
+            const count = DB.get("items").filter(
+              (i) => i.category_id === c.id,
+            ).length;
+            return `<tr>
+      <td>${c.id}</td>
+      <td>${escapeHtml(c.name)}</td>
+      <td class="text-right">${formatNumber(count)}</td>
+      <td class="no-sort">
+        <button class="btn btn-sm btn-warning mr-1" data-act="edit-cat" data-id="${c.id}"><i class="fas fa-pencil-alt"></i></button>
+        <button class="btn btn-sm btn-danger" data-act="del-cat" data-id="${c.id}"><i class="fas fa-trash"></i></button>
       </td></tr>`;
-            })
-            .join("") ||
-          '<tr><td colspan="4" class="text-center">Tidak ada data</td></tr>';
+          })
+          .join("");
 
         document.getElementById("pageContent").innerHTML = `
-    <div class="card">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <span>Daftar Kategori</span>
-        <button class="btn btn-sm btn-primary" data-act="add-cat">
-          <i class="bi bi-plus"></i> Tambah</button>
+    <div class="card shadow mb-4">
+      <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">Daftar Kategori</h6>
+        <button class="btn btn-sm btn-primary" data-act="add-cat"><i class="fas fa-plus"></i> Tambah</button>
       </div>
-      <div class="table-responsive">
-        <table class="table table-striped mb-0">
-          <thead class="table-light">
-            <tr><th>#</th><th>Nama Kategori</th><th class="text-end">Jumlah Barang</th><th>Aksi</th></tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered" id="tblCategories" width="100%" cellspacing="0">
+            <thead>
+              <tr><th>#</th><th>Nama Kategori</th><th class="text-right">Jumlah Barang</th><th class="no-sort">Aksi</th></tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
       </div>
     </div>`;
 
-        document.querySelectorAll("[data-act]").forEach((btn) => {
-          btn.addEventListener("click", function () {
-            const act = this.dataset.act;
-            const id = this.dataset.id ? +this.dataset.id : null;
-            if (act === "add-cat") addCategory();
-            if (act === "edit-cat") editCategory(id);
-            if (act === "del-cat") deleteCategory(id);
-          });
-        });
-      }
-      function addCategory() {
-        openModal(
-          "Tambah Kategori",
-          `
-    <div class="mb-3">
-      <label class="form-label">Nama Kategori <span class="text-danger">*</span></label>
-      <input id="f_cat" class="form-control" placeholder="cth: Alat Lab" autofocus>
-    </div>`,
-        );
-        document.getElementById("modalSave").onclick = () => {
-          const name = document.getElementById("f_cat").value.trim();
-          if (!name) return alert("Nama wajib diisi");
-          const cats = DB.get("categories");
-          cats.push({ id: DB.nextId("categories"), name });
-          DB.set("categories", cats);
-          logActivity("create_category", "Menambahkan kategori " + name);
-          closeModal();
-          renderCategories();
-        };
-      }
-      function editCategory(id) {
-        const c = DB.get("categories").find((x) => x.id === id);
-        openModal(
-          "Edit Kategori",
-          `
-    <div class="mb-3">
-      <label class="form-label">Nama Kategori <span class="text-danger">*</span></label>
-      <input id="f_cat" class="form-control" value="${escapeHtml(c.name)}">
-    </div>`,
-        );
-        document.getElementById("modalSave").onclick = () => {
-          const name = document.getElementById("f_cat").value.trim();
-          if (!name) return alert("Nama wajib diisi");
-          const cats = DB.get("categories");
-          cats.find((x) => x.id === id).name = name;
-          DB.set("categories", cats);
-          logActivity("update_category", "Mengubah kategori " + name);
-          closeModal();
-          renderCategories();
-        };
-      }
-      function deleteCategory(id) {
-        if (DB.get("items").some((i) => i.category_id === id))
-          return alert("Tidak bisa dihapus, masih ada barang di kategori ini");
-        if (!confirm("Yakin hapus kategori ini?")) return;
-        DB.set(
-          "categories",
-          DB.get("categories").filter((x) => x.id !== id),
-        );
-        logActivity("delete_category", "Menghapus kategori #" + id);
-        renderCategories();
+        initDataTable("#tblCategories");
+        bindActions();
       }
 
       /* ============================================================
@@ -1091,49 +1174,45 @@
         if (loanFilter !== "all")
           loans = loans.filter((l) => l.status === loanFilter);
 
-        const rows =
-          loans
-            .map(
-              (l) => `
+        const rows = loans
+          .map(
+            (l) => `
     <tr>
       <td>#${l.id}</td>
       <td>${isAdmin ? escapeHtml(getUser(l.user_id).name) : "- (saya)"}</td>
       <td>${escapeHtml(getItem(l.item_id).name)}</td>
-      <td class="text-end">${formatNumber(l.quantity)}</td>
+      <td class="text-right">${formatNumber(l.quantity)}</td>
       <td>${formatDate(l.loan_date)}</td>
       <td>${formatDate(l.due_date)}</td>
       <td>${statusBadge(l.status)}</td>
-      <td>
+      <td class="no-sort">
         ${
           isAdmin && l.status !== "dikembalikan"
-            ? '<button class="btn btn-sm btn-success me-1" data-act="return" data-id="' +
+            ? '<button class="btn btn-sm btn-success mr-1" data-act="return" data-id="' +
               l.id +
-              '">' +
-              '<i class="bi bi-arrow-return-left"></i> Kembalikan</button>'
+              '"><i class="fas fa-undo-alt"></i> Kembalikan</button>'
             : ""
         }
         ${
           isAdmin
             ? '<button class="btn btn-sm btn-danger" data-act="del-loan" data-id="' +
               l.id +
-              '">' +
-              '<i class="bi bi-trash"></i></button>'
+              '"><i class="fas fa-trash"></i></button>'
             : ""
         }
       </td>
     </tr>`,
-            )
-            .join("") ||
-          '<tr><td colspan="8" class="text-center">Tidak ada data</td></tr>';
+          )
+          .join("");
 
         document.getElementById("pageContent").innerHTML = `
-    <div class="card">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <div class="btn-group btn-group-sm">
+    <div class="card shadow mb-4">
+      <div class="card-header py-3 d-flex justify-content-between align-items-center flex-wrap">
+        <div class="btn-group btn-group-sm mb-2 mb-md-0">
           ${["all", "dipinjam", "dikembalikan", "terlambat"]
             .map(
               (s) =>
-                '<button class="btn btn-outline-secondary ' +
+                '<button class="btn btn-outline-primary ' +
                 (loanFilter === s ? "active" : "") +
                 '" data-act="filter" data-status="' +
                 s +
@@ -1143,28 +1222,165 @@
             )
             .join("")}
         </div>
-        ${
-          isAdmin
-            ? '<button class="btn btn-sm btn-primary" data-act="add-loan">' +
-              '<i class="bi bi-plus"></i> Tambah</button>'
-            : ""
-        }
+        ${isAdmin ? '<button class="btn btn-sm btn-primary" data-act="add-loan"><i class="fas fa-plus"></i> Tambah</button>' : ""}
       </div>
-      <div class="table-responsive">
-        <table class="table table-striped mb-0">
-          <thead class="table-light">
-            <tr><th>#</th><th>Peminjam</th><th>Barang</th><th class="text-end">Qty</th>
-            <th>Tgl Pinjam</th><th>Jatuh Tempo</th><th>Status</th><th>Aksi</th></tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered" id="tblLoans" width="100%" cellspacing="0">
+            <thead>
+              <tr><th>#</th><th>Peminjam</th><th>Barang</th><th class="text-right">Qty</th>
+              <th>Tgl Pinjam</th><th>Jatuh Tempo</th><th>Status</th><th class="no-sort">Aksi</th></tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
       </div>
     </div>`;
 
+        initDataTable("#tblLoans");
+        bindActions();
+      }
+
+      /* ============================================================
+   PENGEMBALIAN
+   ============================================================ */
+      function renderReturns() {
+        document.getElementById("pageTitle").innerText = "Pengembalian";
+        const logs = DB.get("return_logs").slice().reverse();
+        const rows = logs
+          .map((r) => {
+            const loan = DB.get("loans").find((l) => l.id === r.loan_id) || {};
+            const item = getItem(loan.item_id);
+            const user = getUser(loan.user_id);
+            return `<tr>
+      <td>#${r.id}</td>
+      <td>${escapeHtml(user.name)}</td>
+      <td>${escapeHtml(item.name)}</td>
+      <td>${formatDate(r.returned_at)}</td>
+      <td>${statusBadge(r.condition_on_return)}</td>
+      <td>${escapeHtml(r.notes) || "-"}</td>
+    </tr>`;
+          })
+          .join("");
+
+        document.getElementById("pageContent").innerHTML = `
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Riwayat Pengembalian Barang</h6>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered" id="tblReturns" width="100%" cellspacing="0">
+            <thead>
+              <tr><th>#</th><th>Peminjam</th><th>Barang</th><th>Tgl Kembali</th><th>Kondisi</th><th>Catatan</th></tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+      </div>
+    </div>`;
+
+        initDataTable("#tblReturns");
+      }
+
+      /* ============================================================
+   USER MANAGEMENT
+   ============================================================ */
+      function renderUsers() {
+        document.getElementById("pageTitle").innerText = "Manajemen User";
+        const users = DB.get("users");
+        const rows = users
+          .map(
+            (u) => `
+    <tr>
+      <td>${u.id}</td>
+      <td>${escapeHtml(u.name)}</td>
+      <td>${escapeHtml(u.email)}</td>
+      <td>${u.role === "admin" ? '<span class="badge badge-danger">Admin</span>' : '<span class="badge badge-secondary">User</span>'}</td>
+      <td class="no-sort">
+        <button class="btn btn-sm btn-warning mr-1" data-act="edit-user" data-id="${u.id}"><i class="fas fa-pencil-alt"></i></button>
+        ${u.id !== currentUser.id ? '<button class="btn btn-sm btn-danger" data-act="del-user" data-id="' + u.id + '"><i class="fas fa-trash"></i></button>' : ""}
+      </td>
+    </tr>`,
+          )
+          .join("");
+
+        document.getElementById("pageContent").innerHTML = `
+    <div class="card shadow mb-4">
+      <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">Daftar User</h6>
+        <button class="btn btn-sm btn-primary" data-act="add-user"><i class="fas fa-plus"></i> Tambah</button>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered" id="tblUsers" width="100%" cellspacing="0">
+            <thead>
+              <tr><th>#</th><th>Nama</th><th>Email</th><th>Role</th><th class="no-sort">Aksi</th></tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+      </div>
+    </div>`;
+
+        initDataTable("#tblUsers");
+        bindActions();
+      }
+
+      /* ============================================================
+   ACTIVITY LOGS
+   ============================================================ */
+      function renderLogs() {
+        document.getElementById("pageTitle").innerText = "Activity Log";
+        const logs = DB.get("activity_logs").slice().reverse();
+        const rows = logs
+          .map(
+            (l) => `
+    <tr>
+      <td>${l.id}</td>
+      <td>${escapeHtml(getUser(l.user_id).name)}</td>
+      <td><code>${escapeHtml(l.action)}</code></td>
+      <td>${escapeHtml(l.description)}</td>
+      <td>${escapeHtml(l.created_at)}</td>
+    </tr>`,
+          )
+          .join("");
+
+        document.getElementById("pageContent").innerHTML = `
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Riwayat Aktivitas Sistem</h6>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered" id="tblLogs" width="100%" cellspacing="0">
+            <thead>
+              <tr><th>#</th><th>User</th><th>Aksi</th><th>Deskripsi</th><th>Waktu</th></tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+      </div>
+    </div>`;
+
+        initDataTable("#tblLogs");
+      }
+
+      /* ============================================================
+   ACTION BINDER
+   ============================================================ */
+      function bindActions() {
         document.querySelectorAll("[data-act]").forEach((btn) => {
-          btn.addEventListener("click", function () {
+          btn.onclick = function () {
             const act = this.dataset.act;
             const id = this.dataset.id ? +this.dataset.id : null;
+            if (act === "add-item") addItem();
+            if (act === "edit-item") editItem(id);
+            if (act === "del-item") deleteItem(id);
+            if (act === "pinjam") ajukanPinjam(id);
+            if (act === "add-cat") addCategory();
+            if (act === "edit-cat") editCategory(id);
+            if (act === "del-cat") deleteCategory(id);
             if (act === "filter") {
               loanFilter = this.dataset.status;
               renderLoans();
@@ -1172,30 +1388,191 @@
             if (act === "add-loan") addLoan();
             if (act === "return") openReturn(id);
             if (act === "del-loan") deleteLoan(id);
-          });
+            if (act === "add-user") addUser();
+            if (act === "edit-user") editUser(id);
+            if (act === "del-user") deleteUser(id);
+          };
         });
       }
 
+      /* ============================================================
+   ITEM CRUD
+   ============================================================ */
+      function addItem() {
+        openModal("Tambah Barang", itemForm());
+        document.getElementById("modalSave").onclick = () => saveItem();
+      }
+      function editItem(id) {
+        const i = DB.get("items").find((x) => x.id === id);
+        openModal("Edit Barang", itemForm(i));
+        document.getElementById("modalSave").onclick = () => saveItem(id);
+      }
+      function itemForm(i) {
+        i = i || {};
+        const cats = DB.get("categories");
+        return `
+    <div class="form-group">
+      <label>Kategori <span class="text-danger">*</span></label>
+      <select id="f_category" class="form-control">
+        ${cats.map((c) => '<option value="' + c.id + '" ' + (i.category_id === c.id ? "selected" : "") + ">" + escapeHtml(c.name) + "</option>").join("")}
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Nama Barang <span class="text-danger">*</span></label>
+      <input id="f_name" class="form-control" placeholder="cth: Mikroskop" value="${escapeHtml(i.name || "")}">
+    </div>
+    <div class="form-group">
+      <label>Kode/SKU <span class="text-danger">*</span></label>
+      <input id="f_code" class="form-control" placeholder="cth: LAB-001" value="${escapeHtml(i.code || "")}">
+    </div>
+    <div class="form-group">
+      <label>Stok <span class="text-danger">*</span></label>
+      <input id="f_stock" type="number" class="form-control" placeholder="0" value="${i.stock || 0}">
+    </div>
+    <div class="form-group">
+      <label>Kondisi <span class="text-danger">*</span></label>
+      <select id="f_condition" class="form-control">
+        ${["baik", "rusak ringan", "rusak berat"].map((c) => "<option " + (i.condition === c ? "selected" : "") + ">" + c + "</option>").join("")}
+      </select>
+    </div>`;
+      }
+      function saveItem(id) {
+        const data = {
+          category_id: +document.getElementById("f_category").value,
+          name: document.getElementById("f_name").value.trim(),
+          code: document.getElementById("f_code").value.trim(),
+          stock: +document.getElementById("f_stock").value,
+          condition: document.getElementById("f_condition").value,
+        };
+        if (!data.name || !data.code)
+          return swalError("Nama dan Kode wajib diisi");
+        const items = DB.get("items");
+        if (id) {
+          const idx = items.findIndex((x) => x.id === id);
+          items[idx] = Object.assign({}, items[idx], data);
+          logActivity("update_item", "Mengubah barang " + data.name);
+          swalSuccess("Barang berhasil diubah!");
+        } else {
+          data.id = DB.nextId("items");
+          items.push(data);
+          logActivity("create_item", "Menambahkan barang " + data.name);
+          swalSuccess("Barang berhasil ditambahkan!");
+        }
+        DB.set("items", items);
+        closeModal();
+        renderItems();
+      }
+      function deleteItem(id) {
+        const item = DB.get("items").find((x) => x.id === id);
+        swalConfirm(
+          "Hapus Barang?",
+          'Barang "' + item.name + '" akan dihapus permanen.',
+          "Ya, Hapus!",
+        ).then((result) => {
+          if (result.isConfirmed) {
+            DB.set(
+              "items",
+              DB.get("items").filter((x) => x.id !== id),
+            );
+            logActivity("delete_item", "Menghapus barang " + item.name);
+            swalSuccess("Barang berhasil dihapus!");
+            renderItems();
+          }
+        });
+      }
+
+      /* ============================================================
+   CATEGORY CRUD
+   ============================================================ */
+      function addCategory() {
+        openModal(
+          "Tambah Kategori",
+          `
+    <div class="form-group">
+      <label>Nama Kategori <span class="text-danger">*</span></label>
+      <input id="f_cat" class="form-control" placeholder="cth: Alat Lab">
+    </div>`,
+        );
+        document.getElementById("modalSave").onclick = () => {
+          const name = document.getElementById("f_cat").value.trim();
+          if (!name) return swalError("Nama wajib diisi");
+          const cats = DB.get("categories");
+          cats.push({ id: DB.nextId("categories"), name });
+          DB.set("categories", cats);
+          logActivity("create_category", "Menambahkan kategori " + name);
+          swalSuccess("Kategori berhasil ditambahkan!");
+          closeModal();
+          renderCategories();
+        };
+      }
+      function editCategory(id) {
+        const c = DB.get("categories").find((x) => x.id === id);
+        openModal(
+          "Edit Kategori",
+          `
+    <div class="form-group">
+      <label>Nama Kategori <span class="text-danger">*</span></label>
+      <input id="f_cat" class="form-control" value="${escapeHtml(c.name)}">
+    </div>`,
+        );
+        document.getElementById("modalSave").onclick = () => {
+          const name = document.getElementById("f_cat").value.trim();
+          if (!name) return swalError("Nama wajib diisi");
+          const cats = DB.get("categories");
+          cats.find((x) => x.id === id).name = name;
+          DB.set("categories", cats);
+          logActivity("update_category", "Mengubah kategori " + name);
+          swalSuccess("Kategori berhasil diubah!");
+          closeModal();
+          renderCategories();
+        };
+      }
+      function deleteCategory(id) {
+        if (DB.get("items").some((i) => i.category_id === id))
+          return swalError(
+            "Tidak bisa dihapus, masih ada barang di kategori ini",
+          );
+        const cat = DB.get("categories").find((x) => x.id === id);
+        swalConfirm(
+          "Hapus Kategori?",
+          'Kategori "' + cat.name + '" akan dihapus.',
+          "Ya, Hapus!",
+        ).then((result) => {
+          if (result.isConfirmed) {
+            DB.set(
+              "categories",
+              DB.get("categories").filter((x) => x.id !== id),
+            );
+            logActivity("delete_category", "Menghapus kategori " + cat.name);
+            swalSuccess("Kategori berhasil dihapus!");
+            renderCategories();
+          }
+        });
+      }
+
+      /* ============================================================
+   LOAN ACTIONS
+   ============================================================ */
       function ajukanPinjam(itemId) {
         const item = getItem(itemId);
-        if (item.stock <= 0) return alert("Stok habis");
+        if (item.stock <= 0) return swalError("Stok habis");
         openModal(
           "Ajukan Peminjaman",
           `
-    <div class="mb-3">
-      <label class="form-label">Barang</label>
+    <div class="form-group">
+      <label>Barang</label>
       <input class="form-control" value="${escapeHtml(item.name)}" disabled>
     </div>
-    <div class="mb-3">
-      <label class="form-label">Jumlah <span class="text-danger">*</span></label>
-      <input id="f_qty" type="number" min="1" max="${item.stock}" value="1" class="form-control" autofocus>
+    <div class="form-group">
+      <label>Jumlah <span class="text-danger">*</span></label>
+      <input id="f_qty" type="number" min="1" max="${item.stock}" value="1" class="form-control">
     </div>
-    <div class="mb-3">
-      <label class="form-label">Tanggal Pinjam <span class="text-danger">*</span></label>
+    <div class="form-group">
+      <label>Tanggal Pinjam <span class="text-danger">*</span></label>
       <input id="f_loan_date" type="date" class="form-control" value="${new Date().toISOString().slice(0, 10)}">
     </div>
-    <div class="mb-3">
-      <label class="form-label">Jatuh Tempo <span class="text-danger">*</span></label>
+    <div class="form-group">
+      <label>Jatuh Tempo <span class="text-danger">*</span></label>
       <input id="f_due_date" type="date" class="form-control">
     </div>`,
         );
@@ -1204,8 +1581,8 @@
           const loan_date = document.getElementById("f_loan_date").value;
           const due_date = document.getElementById("f_due_date").value;
           if (!qty || !loan_date || !due_date)
-            return alert("Semua field wajib diisi");
-          if (qty > item.stock) return alert("Jumlah melebihi stok");
+            return swalError("Semua field wajib diisi");
+          if (qty > item.stock) return swalError("Jumlah melebihi stok");
 
           const loans = DB.get("loans");
           loans.push({
@@ -1227,6 +1604,7 @@
             "create_loan",
             "Mengajukan peminjaman " + item.name + " (" + qty + ")",
           );
+          swalSuccess("Peminjaman berhasil diajukan!");
           closeModal();
           renderLoans();
         };
@@ -1235,31 +1613,33 @@
       function addLoan() {
         const users = DB.get("users").filter((u) => u.role === "user");
         const items = DB.get("items").filter((i) => i.stock > 0);
+        if (!items.length)
+          return swalError("Tidak ada barang dengan stok tersedia");
         openModal(
           "Tambah Peminjaman (Admin)",
           `
-    <div class="mb-3">
-      <label class="form-label">Peminjam <span class="text-danger">*</span></label>
-      <select id="f_user" class="form-select">
+    <div class="form-group">
+      <label>Peminjam <span class="text-danger">*</span></label>
+      <select id="f_user" class="form-control">
         ${users.map((u) => '<option value="' + u.id + '">' + escapeHtml(u.name) + "</option>").join("")}
       </select>
     </div>
-    <div class="mb-3">
-      <label class="form-label">Barang <span class="text-danger">*</span></label>
-      <select id="f_item" class="form-select">
+    <div class="form-group">
+      <label>Barang <span class="text-danger">*</span></label>
+      <select id="f_item" class="form-control">
         ${items.map((i) => '<option value="' + i.id + '">' + escapeHtml(i.name) + " (stok: " + i.stock + ")</option>").join("")}
       </select>
     </div>
-    <div class="mb-3">
-      <label class="form-label">Jumlah <span class="text-danger">*</span></label>
+    <div class="form-group">
+      <label>Jumlah <span class="text-danger">*</span></label>
       <input id="f_qty" type="number" min="1" value="1" class="form-control">
     </div>
-    <div class="mb-3">
-      <label class="form-label">Tanggal Pinjam <span class="text-danger">*</span></label>
+    <div class="form-group">
+      <label>Tanggal Pinjam <span class="text-danger">*</span></label>
       <input id="f_loan_date" type="date" class="form-control" value="${new Date().toISOString().slice(0, 10)}">
     </div>
-    <div class="mb-3">
-      <label class="form-label">Jatuh Tempo <span class="text-danger">*</span></label>
+    <div class="form-group">
+      <label>Jatuh Tempo <span class="text-danger">*</span></label>
       <input id="f_due_date" type="date" class="form-control">
     </div>`,
         );
@@ -1270,9 +1650,9 @@
           const loan_date = document.getElementById("f_loan_date").value;
           const due_date = document.getElementById("f_due_date").value;
           if (!qty || !loan_date || !due_date)
-            return alert("Semua field wajib diisi");
+            return swalError("Semua field wajib diisi");
           const item = getItem(item_id);
-          if (qty > item.stock) return alert("Jumlah melebihi stok");
+          if (qty > item.stock) return swalError("Jumlah melebihi stok");
 
           const loans = DB.get("loans");
           loans.push({
@@ -1297,69 +1677,38 @@
               " untuk " +
               getUser(user_id).name,
           );
+          swalSuccess("Peminjaman berhasil ditambahkan!");
           closeModal();
           renderLoans();
         };
       }
 
       function deleteLoan(id) {
-        if (!confirm("Yakin hapus peminjaman ini?")) return;
         const loan = DB.get("loans").find((l) => l.id === id);
-        if (loan.status !== "dikembalikan") {
-          const items = DB.get("items");
-          items.find((i) => i.id === loan.item_id).stock += loan.quantity;
-          DB.set("items", items);
-        }
-        DB.set(
-          "loans",
-          DB.get("loans").filter((l) => l.id !== id),
-        );
-        DB.set(
-          "return_logs",
-          DB.get("return_logs").filter((r) => r.loan_id !== id),
-        );
-        logActivity("delete_loan", "Menghapus peminjaman #" + id);
-        renderLoans();
-      }
-
-      /* ============================================================
-   PENGEMBALIAN
-   ============================================================ */
-      function renderReturns() {
-        document.getElementById("pageTitle").innerText = "Pengembalian";
-        const logs = DB.get("return_logs").slice().reverse();
-        const rows =
-          logs
-            .map((r) => {
-              const loan =
-                DB.get("loans").find((l) => l.id === r.loan_id) || {};
-              const item = getItem(loan.item_id);
-              const user = getUser(loan.user_id);
-              return `<tr>
-      <td>#${r.id}</td>
-      <td>${escapeHtml(user.name)}</td>
-      <td>${escapeHtml(item.name)}</td>
-      <td>${formatDate(r.returned_at)}</td>
-      <td>${statusBadge(r.condition_on_return)}</td>
-      <td>${escapeHtml(r.notes) || "-"}</td>
-    </tr>`;
-            })
-            .join("") ||
-          '<tr><td colspan="6" class="text-center">Belum ada data</td></tr>';
-
-        document.getElementById("pageContent").innerHTML = `
-    <div class="card">
-      <div class="card-header">Riwayat Pengembalian Barang</div>
-      <div class="table-responsive">
-        <table class="table table-striped mb-0">
-          <thead class="table-light">
-            <tr><th>#</th><th>Peminjam</th><th>Barang</th>
-                <th>Tgl Kembali</th><th>Kondisi</th><th>Catatan</th></tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>
-    </div>`;
+        swalConfirm(
+          "Hapus Peminjaman?",
+          "Peminjaman #" + id + " akan dihapus.",
+          "Ya, Hapus!",
+        ).then((result) => {
+          if (result.isConfirmed) {
+            if (loan.status !== "dikembalikan") {
+              const items = DB.get("items");
+              items.find((i) => i.id === loan.item_id).stock += loan.quantity;
+              DB.set("items", items);
+            }
+            DB.set(
+              "loans",
+              DB.get("loans").filter((l) => l.id !== id),
+            );
+            DB.set(
+              "return_logs",
+              DB.get("return_logs").filter((r) => r.loan_id !== id),
+            );
+            logActivity("delete_loan", "Menghapus peminjaman #" + id);
+            swalSuccess("Peminjaman berhasil dihapus!");
+            renderLoans();
+          }
+        });
       }
 
       function openReturn(loanId) {
@@ -1368,26 +1717,26 @@
         openModal(
           "Pengembalian Barang",
           `
-    <div class="mb-3">
-      <label class="form-label">Peminjam</label>
+    <div class="form-group">
+      <label>Peminjam</label>
       <input class="form-control" value="${escapeHtml(getUser(loan.user_id).name)}" disabled>
     </div>
-    <div class="mb-3">
-      <label class="form-label">Barang</label>
+    <div class="form-group">
+      <label>Barang</label>
       <input class="form-control" value="${escapeHtml(item.name)} (${loan.quantity})" disabled>
     </div>
-    <div class="mb-3">
-      <label class="form-label">Tanggal Kembali <span class="text-danger">*</span></label>
+    <div class="form-group">
+      <label>Tanggal Kembali <span class="text-danger">*</span></label>
       <input id="f_returned" type="date" class="form-control" value="${new Date().toISOString().slice(0, 10)}">
     </div>
-    <div class="mb-3">
-      <label class="form-label">Kondisi Saat Kembali <span class="text-danger">*</span></label>
-      <select id="f_cond" class="form-select">
+    <div class="form-group">
+      <label>Kondisi Saat Kembali <span class="text-danger">*</span></label>
+      <select id="f_cond" class="form-control">
         ${["baik", "rusak ringan", "rusak berat"].map((c) => "<option>" + c + "</option>").join("")}
       </select>
     </div>
-    <div class="mb-3">
-      <label class="form-label">Catatan</label>
+    <div class="form-group">
+      <label>Catatan</label>
       <textarea id="f_notes" class="form-control" placeholder="Opsional"></textarea>
     </div>`,
         );
@@ -1395,7 +1744,7 @@
           const returned_at = document.getElementById("f_returned").value;
           const condition_on_return = document.getElementById("f_cond").value;
           const notes = document.getElementById("f_notes").value.trim();
-          if (!returned_at) return alert("Tanggal wajib diisi");
+          if (!returned_at) return swalError("Tanggal wajib diisi");
 
           const logs = DB.get("return_logs");
           logs.push({
@@ -1416,91 +1765,33 @@
           DB.set("items", items);
 
           logActivity("return_item", "Mengembalikan " + item.name);
+          swalSuccess("Barang berhasil dikembalikan!");
           closeModal();
           renderLoans();
         };
       }
 
       /* ============================================================
-   USER MANAGEMENT
+   USER CRUD
    ============================================================ */
-      function renderUsers() {
-        document.getElementById("pageTitle").innerText = "Manajemen User";
-        const users = DB.get("users");
-        const rows = users
-          .map(
-            (u) => `
-    <tr>
-      <td>${u.id}</td>
-      <td>${escapeHtml(u.name)}</td>
-      <td>${escapeHtml(u.email)}</td>
-      <td>${
-        u.role === "admin"
-          ? '<span class="badge bg-danger">Admin</span>'
-          : '<span class="badge bg-secondary">User</span>'
-      }</td>
-      <td>
-        <button class="btn btn-sm btn-warning me-1" data-act="edit-user" data-id="${u.id}">
-          <i class="bi bi-pencil"></i></button>
-        ${
-          u.id !== currentUser.id
-            ? '<button class="btn btn-sm btn-danger" data-act="del-user" data-id="' +
-              u.id +
-              '">' +
-              '<i class="bi bi-trash"></i></button>'
-            : ""
-        }
-      </td>
-    </tr>`,
-          )
-          .join("");
-
-        document.getElementById("pageContent").innerHTML = `
-    <div class="card">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <span>Daftar User</span>
-        <button class="btn btn-sm btn-primary" data-act="add-user">
-          <i class="bi bi-plus"></i> Tambah</button>
-      </div>
-      <div class="table-responsive">
-        <table class="table table-striped mb-0">
-          <thead class="table-light">
-            <tr><th>#</th><th>Nama</th><th>Email</th><th>Role</th><th>Aksi</th></tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>
-    </div>`;
-
-        document.querySelectorAll("[data-act]").forEach((btn) => {
-          btn.addEventListener("click", function () {
-            const act = this.dataset.act;
-            const id = this.dataset.id ? +this.dataset.id : null;
-            if (act === "add-user") addUser();
-            if (act === "edit-user") editUser(id);
-            if (act === "del-user") deleteUser(id);
-          });
-        });
-      }
       function userForm(u) {
         u = u || {};
         return `
-    <div class="mb-3">
-      <label class="form-label">Nama <span class="text-danger">*</span></label>
-      <input id="f_name" class="form-control" value="${escapeHtml(u.name || "")}" placeholder="Nama lengkap" autofocus>
+    <div class="form-group">
+      <label>Nama <span class="text-danger">*</span></label>
+      <input id="f_name" class="form-control" value="${escapeHtml(u.name || "")}" placeholder="Nama lengkap">
     </div>
-    <div class="mb-3">
-      <label class="form-label">Email <span class="text-danger">*</span></label>
+    <div class="form-group">
+      <label>Email <span class="text-danger">*</span></label>
       <input id="f_email" type="email" class="form-control" value="${escapeHtml(u.email || "")}" placeholder="email@sekolah.test">
     </div>
-    <div class="mb-3">
-      <label class="form-label">Password ${u.id ? "" : '<span class="text-danger">*</span>'}</label>
-      <input id="f_password" type="password" class="form-control"
-        placeholder="${u.id ? "Biarkan kosong jika tidak diubah" : "Password"}">
+    <div class="form-group">
+      <label>Password ${u.id ? "" : '<span class="text-danger">*</span>'}</label>
+      <input id="f_password" type="password" class="form-control" placeholder="${u.id ? "Biarkan kosong jika tidak diubah" : "Password"}">
     </div>
-    <div class="mb-3">
-      <label class="form-label">Role <span class="text-danger">*</span></label>
-      <select id="f_role" class="form-select">
+    <div class="form-group">
+      <label>Role <span class="text-danger">*</span></label>
+      <select id="f_role" class="form-control">
         <option value="user" ${u.role === "user" ? "selected" : ""}>User</option>
         <option value="admin" ${u.role === "admin" ? "selected" : ""}>Admin</option>
       </select>
@@ -1516,14 +1807,15 @@
             role: document.getElementById("f_role").value,
           };
           if (!data.name || !data.email || !data.password)
-            return alert("Semua field wajib diisi");
+            return swalError("Semua field wajib diisi");
           if (DB.get("users").some((u) => u.email === data.email))
-            return alert("Email sudah terdaftar");
+            return swalError("Email sudah terdaftar");
           const users = DB.get("users");
           data.id = DB.nextId("users");
           users.push(data);
           DB.set("users", users);
           logActivity("create_user", "Menambahkan user " + data.name);
+          swalSuccess("User berhasil ditambahkan!");
           closeModal();
           renderUsers();
         };
@@ -1541,70 +1833,41 @@
           if (pwd) target.password = pwd;
           DB.set("users", users);
           logActivity("update_user", "Mengubah user " + target.name);
+          swalSuccess("User berhasil diubah!");
           closeModal();
           renderUsers();
         };
       }
       function deleteUser(id) {
-        if (!confirm("Yakin hapus user ini?")) return;
-        DB.set(
-          "users",
-          DB.get("users").filter((u) => u.id !== id),
-        );
-        DB.set(
-          "loans",
-          DB.get("loans").filter((l) => l.user_id !== id),
-        );
-        logActivity("delete_user", "Menghapus user #" + id);
-        renderUsers();
-      }
-
-      /* ============================================================
-   ACTIVITY LOGS
-   ============================================================ */
-      function renderLogs() {
-        document.getElementById("pageTitle").innerText = "Activity Log";
-        const logs = DB.get("activity_logs").slice().reverse();
-        const rows =
-          logs
-            .map(
-              (l) => `
-    <tr>
-      <td>${l.id}</td>
-      <td>${escapeHtml(getUser(l.user_id).name)}</td>
-      <td><code>${escapeHtml(l.action)}</code></td>
-      <td>${escapeHtml(l.description)}</td>
-      <td>${escapeHtml(l.created_at)}</td>
-    </tr>`,
-            )
-            .join("") ||
-          '<tr><td colspan="5" class="text-center">Belum ada log</td></tr>';
-
-        document.getElementById("pageContent").innerHTML = `
-    <div class="card">
-      <div class="card-header">Riwayat Aktivitas Sistem</div>
-      <div class="table-responsive">
-        <table class="table table-striped mb-0">
-          <thead class="table-light">
-            <tr><th>#</th><th>User</th><th>Aksi</th><th>Deskripsi</th><th>Waktu</th></tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>
-    </div>`;
+        const user = DB.get("users").find((u) => u.id === id);
+        swalConfirm(
+          "Hapus User?",
+          'User "' + user.name + '" akan dihapus beserta data peminjamannya.',
+          "Ya, Hapus!",
+        ).then((result) => {
+          if (result.isConfirmed) {
+            DB.set(
+              "users",
+              DB.get("users").filter((u) => u.id !== id),
+            );
+            DB.set(
+              "loans",
+              DB.get("loans").filter((l) => l.user_id !== id),
+            );
+            logActivity("delete_user", "Menghapus user " + user.name);
+            swalSuccess("User berhasil dihapus!");
+            renderUsers();
+          }
+        });
       }
 
       /* ============================================================
    MODAL
    ============================================================ */
-      let modalInstance = null;
       function openModal(title, bodyHtml) {
         document.getElementById("modalTitle").innerText = title;
         document.getElementById("modalBody").innerHTML = bodyHtml;
-        modalInstance = new bootstrap.Modal(
-          document.getElementById("appModal"),
-        );
-        modalInstance.show();
+        $("#appModal").modal("show");
         setTimeout(() => {
           const first = document.querySelector(
             "#modalBody input, #modalBody select, #modalBody textarea",
@@ -1613,17 +1876,51 @@
         }, 300);
       }
       function closeModal() {
-        if (modalInstance) modalInstance.hide();
+        $("#appModal").modal("hide");
       }
 
       /* ============================================================
    INIT
    ============================================================ */
-      document.getElementById("btnLogout").addEventListener("click", logout);
+      document.addEventListener("DOMContentLoaded", function () {
+        // Event login
+        document
+          .getElementById("btnLogin")
+          .addEventListener("click", doLoginAction);
+        document
+          .getElementById("loginPassword")
+          .addEventListener("keypress", function (e) {
+            if (e.key === "Enter") doLoginAction();
+          });
+        document
+          .getElementById("loginEmail")
+          .addEventListener("keypress", function (e) {
+            if (e.key === "Enter") doLoginAction();
+          });
 
-      seed();
-      if (currentUser) renderApp();
-      else renderLogin();
+        // Event logout
+        document
+          .getElementById("btnLogout")
+          .addEventListener("click", function (e) {
+            e.preventDefault();
+            logout();
+          });
+
+        // Sidebar toggle
+        $("#sidebarToggle, #sidebarToggleTop").on("click", function (e) {
+          e.preventDefault();
+          $("body").toggleClass("sidebar-toggled");
+          $(".sidebar").toggleClass("toggled");
+        });
+
+        // Init
+        seed();
+        if (currentUser) {
+          renderApp();
+        } else {
+          renderLogin();
+        }
+      });
     </script>
   </body>
 </html>
